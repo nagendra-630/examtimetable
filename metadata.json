@@ -1,0 +1,6 @@
+{
+  "name": "Exam Timetable Planner – Smart Revision Scheduler",
+  "description": "Intelligent exam revision timetable generator with spaced repetition, subject difficulty balancing, study timer tracking, calendar views, and performance analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
