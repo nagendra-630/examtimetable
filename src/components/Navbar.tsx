@@ -132,15 +132,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               Admin
             </button>
           )}
-
-          <button
-            onClick={() => onNavigate('springdocs')}
-            className={`whitespace-nowrap transition-colors flex items-center gap-1 py-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline ${
-              currentTab === 'springdocs' ? 'font-bold' : ''
-            }`}
-          >
-            API & Backend Code
-          </button>
         </nav>
 
         {/* Zone 3: 1 primary action cluster */}
@@ -250,7 +241,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                   <div className="border-t border-slate-100 dark:border-slate-800 my-1 pt-1">
                     <button
-                      onClick={logout}
+                      onClick={() => onNavigate('login')}
+                      className="w-full text-left px-4 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-semibold flex items-center justify-between"
+                    >
+                      <span>Authentication Portal</span>
+                      <span className="text-[10px] text-slate-400">&rarr;</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        logout();
+                        onNavigate('login');
+                      }}
                       className="w-full text-left px-4 py-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 font-medium"
                     >
                       Log out
@@ -260,12 +261,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
           ) : (
-            <button
-              onClick={() => openAuthModal('login')}
-              className="px-4 py-2 text-xs font-semibold text-white bg-slate-900 dark:bg-white dark:text-slate-900 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
-            >
-              Sign In
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onNavigate('login')}
+                className="px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors whitespace-nowrap"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => openAuthModal('register')}
+                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-2xs transition-colors whitespace-nowrap"
+              >
+                Register
+              </button>
+            </div>
           )}
         </div>
       </div>

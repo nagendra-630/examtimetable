@@ -5,8 +5,9 @@ import { StorageService } from '../services/storage';
 interface AuthContextType {
   currentUser: User | null;
   role: Role;
-  login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
-  register: (name: string, email: string, pass: string, role: Role) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, pass: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, pass: string, role: Role, school?: string) => Promise<{ success: boolean; error?: string }>;
+  resetPassword: (email: string, newPass: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   switchUser: (userId: string) => void;
   updateProfile: (data: Partial<User>) => void;
@@ -60,12 +61,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (email: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (email: string, _pass: string, rememberMe = true): Promise<{ success: boolean; error?: string }> => {
     const users = StorageService.getUsers();
     const found = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (found) {
       StorageService.setCurrentUser(found);
       setCurrentUser(found);
+      if (rememberMe) {
+        localStorage.setItem('exam_planner_remembered_email', email);
+      } else {
+        localStorage.removeItem('exam_planner_remembered_email');
+      }
       return { success: true };
     }
     // If not found in seed, create student on the fly for ease of testing
@@ -92,13 +98,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     StorageService.saveUser(newUser);
     StorageService.setCurrentUser(newUser);
     setCurrentUser(newUser);
+    if (rememberMe) {
+      localStorage.setItem('exam_planner_remembered_email', email);
+    }
     return { success: true };
   };
 
-  const register = async (name: string, email: string, _pass: string, role: Role) => {
+  const register = async (name: string, email: string, _pass: string, role: Role, school?: string) => {
     const users = StorageService.getUsers();
     if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
-      return { success: false, error: 'An account with this email already exists.' };
+      return { success: false, error: 'An account with this email address already exists.' };
     }
 
     const newUser: User = {
@@ -106,7 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name,
       email,
       role,
-      schoolOrUniversity: 'Undergraduate Program',
+      schoolOrUniversity: school || 'Undergraduate Program',
       createdAt: new Date().toISOString(),
       studyPreferences: {
         dailyAvailableHours: 4,
@@ -125,6 +134,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     StorageService.saveUser(newUser);
     StorageService.setCurrentUser(newUser);
     setCurrentUser(newUser);
+    return { success: true };
+  };
+
+  const resetPassword = async (email: string, _newPass: string) => {
+    const users = StorageService.getUsers();
+    const found = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    if (!found) {
+      return { success: false, error: 'No account found matching this email address.' };
+    }
     return { success: true };
   };
 
@@ -173,6 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         role: currentUser?.role || 'STUDENT',
         login,
         register,
+        resetPassword,
         logout,
         switchUser,
         updateProfile,

@@ -26,7 +26,7 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminPage } from './pages/AdminPage';
 import { LandingPage } from './pages/LandingPage';
-import { SpringBootDocsPage } from './pages/SpringBootDocsPage';
+import { LoginPage } from './pages/LoginPage';
 
 import { StorageService } from './services/storage';
 import { AppNotification, Chapter, Exam, RevisionTask, Subject } from './types';
@@ -170,7 +170,9 @@ function AppContent() {
           />
         )}
 
-        {currentTab === 'springdocs' && <SpringBootDocsPage />}
+        {currentTab === 'login' && (
+          <LoginPage onLoginSuccess={() => setCurrentTab('dashboard')} />
+        )}
       </main>
 
       {/* Mobile Floating Action / Bottom Nav for high accessibility */}

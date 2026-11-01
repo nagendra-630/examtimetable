@@ -52,10 +52,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </button>
 
             <button
-              onClick={() => onExploreDemo('user-student-1')}
+              onClick={() => openAuthModal('login')}
               className="px-5 py-3 text-xs sm:text-sm font-semibold text-white bg-indigo-600/80 hover:bg-indigo-600 rounded-xl transition-all border border-indigo-500/40"
             >
-              Explore Live Demo Account
+              Sign In to Your Account
             </button>
           </div>
 
