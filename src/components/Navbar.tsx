@@ -229,13 +229,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => switchUser('user-student-2')}
                       className="w-full text-left px-4 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
                     >
-                      Elena Chen (Student)
+                      Elena Chen (Student · MIT)
+                    </button>
+                    <button
+                      onClick={() => switchUser('user-student-3')}
+                      className="w-full text-left px-4 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+                    >
+                      Marcus Vance (Student · Berkeley)
                     </button>
                     <button
                       onClick={() => switchUser('user-admin-1')}
                       className="w-full text-left px-4 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-amber-600 dark:text-amber-400 font-medium"
                     >
-                      Dr. Sarah Vance (Admin)
+                      Dr. Sarah Vance (Admin · Dean)
                     </button>
                   </div>
 

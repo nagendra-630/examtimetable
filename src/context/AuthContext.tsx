@@ -6,7 +6,14 @@ interface AuthContextType {
   currentUser: User | null;
   role: Role;
   login: (email: string, pass: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>;
-  register: (name: string, email: string, pass: string, role: Role, school?: string) => Promise<{ success: boolean; error?: string }>;
+  register: (
+    name: string,
+    email: string,
+    pass: string,
+    role: Role,
+    school?: string,
+    initialPrefs?: Partial<StudyPreferences>
+  ) => Promise<{ success: boolean; error?: string }>;
   resetPassword: (email: string, newPass: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   switchUser: (userId: string) => void;
@@ -104,7 +111,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true };
   };
 
-  const register = async (name: string, email: string, _pass: string, role: Role, school?: string) => {
+  const register = async (
+    name: string,
+    email: string,
+    _pass: string,
+    role: Role,
+    school?: string,
+    initialPrefs?: Partial<StudyPreferences>
+  ) => {
     const users = StorageService.getUsers();
     if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
       return { success: false, error: 'An account with this email address already exists.' };
@@ -118,20 +132,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       schoolOrUniversity: school || 'Undergraduate Program',
       createdAt: new Date().toISOString(),
       studyPreferences: {
-        dailyAvailableHours: 4,
+        dailyAvailableHours: initialPrefs?.dailyAvailableHours || 4,
         preferredStartTime: '09:00',
         preferredEndTime: '21:00',
-        sessionDurationMinutes: 50,
-        breakDurationMinutes: 10,
+        sessionDurationMinutes: initialPrefs?.sessionDurationMinutes || 50,
+        breakDurationMinutes: initialPrefs?.breakDurationMinutes || 10,
         reservePreExamDays: 1,
         enableSpacedRepetition: true,
         focusWeakSubjects: true,
         emailNotifications: true,
         dailyReminderTime: '08:00',
+        ...initialPrefs,
       },
     };
 
     StorageService.saveUser(newUser);
+    StorageService.ensureUserCurriculum(newUser.id);
     StorageService.setCurrentUser(newUser);
     setCurrentUser(newUser);
     return { success: true };

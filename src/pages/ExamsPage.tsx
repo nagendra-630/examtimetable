@@ -29,6 +29,7 @@ export const ExamsPage: React.FC<ExamsPageProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
+  const [filterSubject, setFilterSubject] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'date_asc' | 'date_desc' | 'priority'>('date_asc');
   const [editingExam, setEditingExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -140,7 +141,10 @@ export const ExamsPage: React.FC<ExamsPageProps> = ({
         e.examName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         e.subjectName.toLowerCase().includes(searchQuery.toLowerCase());
       const matchDiff = filterDifficulty === 'all' || e.difficulty === filterDifficulty;
-      return matchSearch && matchDiff;
+      const matchSubject =
+        filterSubject === 'all' ||
+        e.subjectName.toLowerCase().includes(filterSubject.toLowerCase());
+      return matchSearch && matchDiff && matchSubject;
     })
     .sort((a, b) => {
       if (sortBy === 'date_asc') return a.examDate.localeCompare(b.examDate);
@@ -151,6 +155,17 @@ export const ExamsPage: React.FC<ExamsPageProps> = ({
       }
       return 0;
     });
+
+  const subjectFilterTags = [
+    { label: 'All Subjects', value: 'all' },
+    { label: 'Deep Learning', value: 'Deep Learning' },
+    { label: 'CNS', value: 'CNS' },
+    { label: 'Gen AI', value: 'Gen AI' },
+    { label: 'Java', value: 'Java' },
+    { label: 'Python', value: 'Python' },
+    { label: 'NLP', value: 'NLP' },
+    { label: 'FSD', value: 'FSD' },
+  ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -182,43 +197,64 @@ export const ExamsPage: React.FC<ExamsPageProps> = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row gap-3 items-center justify-between shadow-xs">
-        <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search exam or subject name..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-          />
+      <div className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs">
+        <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+          <div className="relative w-full md:w-80">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search exam or subject name..."
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+              <Filter className="w-3.5 h-3.5" />
+              <span>Difficulty:</span>
+            </div>
+            <select
+              value={filterDifficulty}
+              onChange={(e) => setFilterDifficulty(e.target.value)}
+              className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
+            >
+              <option value="all">All Difficulties</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
+            >
+              <option value="date_asc">Earliest Exam Date</option>
+              <option value="date_desc">Latest Exam Date</option>
+              <option value="priority">Highest Priority</option>
+            </select>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <Filter className="w-3.5 h-3.5" />
-            <span>Difficulty:</span>
-          </div>
-          <select
-            value={filterDifficulty}
-            onChange={(e) => setFilterDifficulty(e.target.value)}
-            className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
-          >
-            <option value="all">All Difficulties</option>
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-          </select>
-
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
-          >
-            <option value="date_asc">Earliest Exam Date</option>
-            <option value="date_desc">Latest Exam Date</option>
-            <option value="priority">Highest Priority</option>
-          </select>
+        {/* 7 Core Subjects Quick Filter Chips */}
+        <div className="flex items-center gap-1.5 pt-1 overflow-x-auto pb-1 text-xs">
+          <span className="text-[11px] font-semibold text-slate-400 mr-1 shrink-0">Subject:</span>
+          {subjectFilterTags.map((tag) => (
+            <button
+              key={tag.value}
+              type="button"
+              onClick={() => setFilterSubject(tag.value)}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
+                filterSubject === tag.value
+                  ? 'bg-indigo-600 text-white shadow-2xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+            >
+              {tag.label}
+            </button>
+          ))}
         </div>
       </div>
 
